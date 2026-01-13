@@ -91,7 +91,7 @@ function renderApplications() {
     if (filteredApps.length === 0) {
         applicationsList.innerHTML = `
             <div class="empty-state">
-                <p>${currentFilter === 'all' ? 'No applications yet. Add your first one above! 🚀' : `No ${currentFilter} applications yet.`}</p>
+                <p>${currentFilter === 'all' ? 'No applications yet.' : `No ${currentFilter} yet.`}</p>
             </div>
         `;
         return;

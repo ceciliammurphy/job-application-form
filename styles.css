@@ -1,9 +1,9 @@
 :root {
     /* Colors */
-    --primary-color: #4f46e5;
-    --primary-hover: #4338ca;
-    --primary-light: rgba(79, 70, 229, 0.1);
-    
+    --primary-color: #c50055;
+    --primary-hover: #ff61a6c2;
+    --primary-light: #ffaacf6b;
+
     --text-primary: #1a202c;
     --text-secondary: #4a5568;
     --text-tertiary: #64748b;
@@ -16,14 +16,14 @@
     --border-light: #e2e8f0;
     --border-medium: #cbd5e0;
     
-    --success-bg: #bbf7d0;
-    --success-text: #15803d;
+    --success-bg: #e0ff9d;
+    --success-text: #2f4500;
     
     --warning-bg: #fed7aa;
-    --warning-text: #c2410c;
+    --warning-text: rgb(255, 92, 28);
     
-    --info-bg: #dbeafe;
-    --info-text: #1e40af;
+    --info-bg: #aedfff;
+    --info-text: #004877;
     
     --danger-bg: #fecaca;
     --danger-text: #b91c1c;
