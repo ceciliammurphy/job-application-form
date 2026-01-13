@@ -37,8 +37,10 @@ form.addEventListener('submit', (e) => {
         id: Date.now(),
         company: document.getElementById('company').value.trim(),
         position: document.getElementById('position').value.trim(),
+        location: document.getElementById('location').value.trim(),
         status: document.getElementById('status').value,
         date: document.getElementById('date').value,
+        coverLetter: document.getElementById('coverLetter').checked,
         url: document.getElementById('url').value.trim(),
         notes: document.getElementById('notes').value.trim(),
         createdAt: new Date().toISOString()
@@ -102,7 +104,7 @@ function renderApplications() {
             <div class="application-header">
                 <div class="application-info">
                     <h3>${app.company}</h3>
-                    <p class="position">${app.position}</p>
+                    <p class="position">${app.position}${app.location ? ` • ${app.location}` : ''}</p>
                 </div>
                 <div class="application-actions">
                     <select class="status-select status-${app.status}" onchange="updateStatus(${app.id}, this.value)">
@@ -117,6 +119,10 @@ function renderApplications() {
             <div class="application-details">
                 <span class="detail-label">Date Applied:</span>
                 <span class="detail-value">${formatDate(app.date)}</span>
+                ${app.coverLetter ? `
+                    <span class="detail-label">Cover Letter:</span>
+                    <span class="detail-value"><span class="badge-success">✓ Submitted</span></span>
+                ` : ''}
                 ${app.url ? `
                     <span class="detail-label">Website:</span>
                     <span class="detail-value">
