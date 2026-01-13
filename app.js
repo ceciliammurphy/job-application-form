@@ -105,7 +105,12 @@ function renderApplications() {
                     <p class="position">${app.position}</p>
                 </div>
                 <div class="application-actions">
-                    <span class="status-badge status-${app.status}">${app.status}</span>
+                    <select class="status-select status-${app.status}" onchange="updateStatus(${app.id}, this.value)">
+                        <option value="Applied" ${app.status === 'Applied' ? 'selected' : ''}>Applied</option>
+                        <option value="Interview" ${app.status === 'Interview' ? 'selected' : ''}>Interview</option>
+                        <option value="Offer" ${app.status === 'Offer' ? 'selected' : ''}>Offer</option>
+                        <option value="Rejected" ${app.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                    </select>
                     <button class="btn-delete" onclick="deleteApplication(${app.id})">Delete</button>
                 </div>
             </div>
@@ -137,6 +142,18 @@ function deleteApplication(id) {
         updateStats();
         renderApplications();
         showNotification('Application deleted');
+    }
+}
+
+// Update application status
+function updateStatus(id, newStatus) {
+    const app = applications.find(app => app.id === id);
+    if (app) {
+        app.status = newStatus;
+        saveToLocalStorage();
+        updateStats();
+        renderApplications();
+        showNotification(`Status updated to ${newStatus}! 🎉`);
     }
 }
 
