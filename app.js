@@ -145,9 +145,9 @@ function renderApplications() {
             <div class="application-details">
                 <span class="detail-label">Date Applied:</span>
                 <span class="detail-value">${formatDate(app.date)}</span>
-                ${app.salary ? `
+                ${app.salary && app.salary > 0 ? `
                     <span class="detail-label">Salary:</span>
-                    <span class="detail-value">$${app.salary.toLocaleString()}</span>
+                    <span class="detail-value">$${Number(app.salary).toLocaleString()}</span>
                 ` : ''}
                 ${app.coverLetter ? `
                     <span class="detail-label">Cover Letter:</span>
