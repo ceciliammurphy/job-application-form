@@ -13,6 +13,9 @@ let currentLocationFilter = 'all';
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
+    // Normalize existing locations
+    normalizeExistingLocations();
+    
     updateStats();
     updateLocationFilter();
     renderApplications();
@@ -31,6 +34,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// Normalize existing locations in saved applications
+function normalizeExistingLocations() {
+    let needsUpdate = false;
+    applications.forEach(app => {
+        if (app.location) {
+            const normalized = capitalizeLocation(app.location);
+            if (app.location !== normalized) {
+                app.location = normalized;
+                needsUpdate = true;
+            }
+        }
+    });
+    if (needsUpdate) {
+        saveToLocalStorage();
+    }
+}
+
 // Set today's date as default
 function setTodayDate() {
     const dateInput = document.getElementById('date');
@@ -43,12 +63,13 @@ form.addEventListener('submit', (e) => {
     e.preventDefault();
     
     const salaryValue = document.getElementById('salary').value;
+    const locationValue = document.getElementById('location').value.trim();
     
     const application = {
         id: Date.now(),
         company: document.getElementById('company').value.trim(),
         position: document.getElementById('position').value.trim(),
-        location: document.getElementById('location').value.trim(),
+        location: capitalizeLocation(locationValue),
         status: document.getElementById('status').value,
         date: document.getElementById('date').value,
         salary: salaryValue ? parseFloat(salaryValue) : null,
@@ -235,6 +256,15 @@ function updateStats() {
 // Save to localStorage
 function saveToLocalStorage() {
     localStorage.setItem('applications', JSON.stringify(applications));
+}
+
+// Capitalize each word in location
+function capitalizeLocation(location) {
+    if (!location) return '';
+    return location
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
 }
 
 // Format date
