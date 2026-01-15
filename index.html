@@ -63,6 +63,17 @@
                         <label for="date">Date Applied</label>
                         <input type="date" id="date" required>
                     </div>
+                    <div class="form-group">
+                        <label for="salary">Salary (optional)</label>
+                        <input type="number" id="salary" placeholder="e.g., 85000" min="0" step="1000">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="url">Company Website (optional)</label>
+                        <input type="url" id="url" placeholder="e.g., https://company.com">
+                    </div>
                     <div class="form-group checkbox-group">
                         <label class="checkbox-label">
                             <input type="checkbox" id="coverLetter">
@@ -72,7 +83,6 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="url">Company Website (optional)</label>
                     <input type="url" id="url" placeholder="e.g., https://company.com">
                 </div>
 
@@ -94,6 +104,14 @@
                         <select id="sortSelect" class="sort-select">
                             <option value="newest">Newest First</option>
                             <option value="oldest">Oldest First</option>
+                            <option value="salary-high">Salary: High to Low</option>
+                            <option value="salary-low">Salary: Low to High</option>
+                        </select>
+                    </div>
+                    <div class="sort-container">
+                        <label for="locationFilter">Location:</label>
+                        <select id="locationFilter" class="sort-select">
+                            <option value="all">All Locations</option>
                         </select>
                     </div>
                     <div class="filter-buttons">

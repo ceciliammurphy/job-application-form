@@ -6,18 +6,27 @@ const form = document.getElementById('applicationForm');
 const applicationsList = document.getElementById('applicationsList');
 const filterButtons = document.querySelectorAll('.filter-btn');
 const sortSelect = document.getElementById('sortSelect');
+const locationFilter = document.getElementById('locationFilter');
 let currentFilter = 'all';
 let currentSort = 'newest';
+let currentLocationFilter = 'all';
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
     updateStats();
+    updateLocationFilter();
     renderApplications();
     setTodayDate();
     
     // Add sort event listener
     sortSelect.addEventListener('change', (e) => {
         currentSort = e.target.value;
+        renderApplications();
+    });
+
+    // Add location filter event listener
+    locationFilter.addEventListener('change', (e) => {
+        currentLocationFilter = e.target.value;
         renderApplications();
     });
 });
@@ -33,6 +42,8 @@ function setTodayDate() {
 form.addEventListener('submit', (e) => {
     e.preventDefault();
     
+    const salaryValue = document.getElementById('salary').value;
+    
     const application = {
         id: Date.now(),
         company: document.getElementById('company').value.trim(),
@@ -40,6 +51,7 @@ form.addEventListener('submit', (e) => {
         location: document.getElementById('location').value.trim(),
         status: document.getElementById('status').value,
         date: document.getElementById('date').value,
+        salary: salaryValue ? parseFloat(salaryValue) : null,
         coverLetter: document.getElementById('coverLetter').checked,
         url: document.getElementById('url').value.trim(),
         notes: document.getElementById('notes').value.trim(),
@@ -55,6 +67,7 @@ form.addEventListener('submit', (e) => {
     
     // Update UI
     updateStats();
+    updateLocationFilter();
     renderApplications();
     
     // Show success animation
@@ -73,21 +86,34 @@ filterButtons.forEach(btn => {
 
 // Render applications
 function renderApplications() {
-    // Filter applications
+    // Filter applications by status
     let filteredApps = currentFilter === 'all' 
         ? [...applications] 
         : applications.filter(app => app.status === currentFilter);
     
+    // Filter applications by location
+    if (currentLocationFilter !== 'all') {
+        filteredApps = filteredApps.filter(app => app.location === currentLocationFilter);
+    }
+    
     // Sort applications
     filteredApps.sort((a, b) => {
-        const dateA = new Date(a.date);
-        const dateB = new Date(b.date);
-        
         if (currentSort === 'newest') {
-            return dateB - dateA; // Newest first
-        } else {
-            return dateA - dateB; // Oldest first
+            return new Date(b.date) - new Date(a.date); // Newest first
+        } else if (currentSort === 'oldest') {
+            return new Date(a.date) - new Date(b.date); // Oldest first
+        } else if (currentSort === 'salary-high') {
+            // Sort by salary high to low (handle null values)
+            const salaryA = a.salary || 0;
+            const salaryB = b.salary || 0;
+            return salaryB - salaryA;
+        } else if (currentSort === 'salary-low') {
+            // Sort by salary low to high (handle null values)
+            const salaryA = a.salary || 0;
+            const salaryB = b.salary || 0;
+            return salaryA - salaryB;
         }
+        return 0;
     });
     
     if (filteredApps.length === 0) {
@@ -119,6 +145,10 @@ function renderApplications() {
             <div class="application-details">
                 <span class="detail-label">Date Applied:</span>
                 <span class="detail-value">${formatDate(app.date)}</span>
+                ${app.salary ? `
+                    <span class="detail-label">Salary:</span>
+                    <span class="detail-value">$${app.salary.toLocaleString()}</span>
+                ` : ''}
                 ${app.coverLetter ? `
                     <span class="detail-label">Cover Letter:</span>
                     <span class="detail-value"><span class="badge-success">✓ Submitted</span></span>
@@ -146,8 +176,38 @@ function deleteApplication(id) {
         applications = applications.filter(app => app.id !== id);
         saveToLocalStorage();
         updateStats();
+        updateLocationFilter();
         renderApplications();
         showNotification('Application deleted');
+    }
+}
+
+// Update location filter dropdown
+function updateLocationFilter() {
+    // Get unique locations from applications
+    const locations = [...new Set(applications
+        .map(app => app.location)
+        .filter(loc => loc && loc.trim() !== '')
+    )].sort();
+    
+    // Save current selection
+    const currentSelection = locationFilter.value;
+    
+    // Update dropdown options
+    locationFilter.innerHTML = '<option value="all">All Locations</option>';
+    locations.forEach(location => {
+        const option = document.createElement('option');
+        option.value = location;
+        option.textContent = location;
+        locationFilter.appendChild(option);
+    });
+    
+    // Restore selection if it still exists
+    if (locations.includes(currentSelection)) {
+        locationFilter.value = currentSelection;
+    } else {
+        locationFilter.value = 'all';
+        currentLocationFilter = 'all';
     }
 }
 

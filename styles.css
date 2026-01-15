@@ -224,6 +224,17 @@ header h1 {
     background: var(--bg-primary);
 }
 
+.form-group input[type="number"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.form-group input[type="number"]::-webkit-outer-spin-button,
+.form-group input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
