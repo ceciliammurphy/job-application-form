@@ -13,6 +13,9 @@ let currentLocationFilter = 'all';
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
+    // Fix existing dates (one-time correction)
+    fixExistingDates();
+    
     // Normalize existing locations
     normalizeExistingLocations();
     
@@ -33,6 +36,36 @@ document.addEventListener('DOMContentLoaded', () => {
         renderApplications();
     });
 });
+
+// Fix existing dates by adding one day (one-time correction for timezone issue)
+function fixExistingDates() {
+    // Check if we've already run this fix
+    const dateFixApplied = localStorage.getItem('dateFixApplied');
+    if (dateFixApplied) return;
+    
+    let needsUpdate = false;
+    applications.forEach(app => {
+        if (app.date) {
+            // Parse the date and add one day
+            const [year, month, day] = app.date.split('-');
+            const date = new Date(year, month - 1, parseInt(day) + 1);
+            
+            // Format back to YYYY-MM-DD
+            const newYear = date.getFullYear();
+            const newMonth = String(date.getMonth() + 1).padStart(2, '0');
+            const newDay = String(date.getDate()).padStart(2, '0');
+            
+            app.date = `${newYear}-${newMonth}-${newDay}`;
+            needsUpdate = true;
+        }
+    });
+    
+    if (needsUpdate) {
+        saveToLocalStorage();
+        localStorage.setItem('dateFixApplied', 'true');
+        console.log('Dates updated successfully');
+    }
+}
 
 // Normalize existing locations in saved applications
 function normalizeExistingLocations() {
