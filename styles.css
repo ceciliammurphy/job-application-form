@@ -465,6 +465,11 @@ header h1 {
     color: var(--danger-text);
 }
 
+.status-Ghosted {
+    background: #e5e7eb;
+    color: #4b5563;
+}
+
 .application-details {
     display: grid;
     grid-template-columns: auto 1fr;

@@ -13,6 +13,9 @@ let currentLocationFilter = 'all';
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize lastUpdated for existing applications
+    initializeLastUpdated();
+    
     // Normalize existing locations
     normalizeExistingLocations();
     
@@ -33,6 +36,21 @@ document.addEventListener('DOMContentLoaded', () => {
         renderApplications();
     });
 });
+
+// Initialize lastUpdated for existing applications
+function initializeLastUpdated() {
+    let needsUpdate = false;
+    applications.forEach(app => {
+        if (!app.lastUpdated) {
+            // Use createdAt if available, otherwise use date
+            app.lastUpdated = app.createdAt || new Date(app.date).toISOString();
+            needsUpdate = true;
+        }
+    });
+    if (needsUpdate) {
+        saveToLocalStorage();
+    }
+}
 
 // Normalize existing locations in saved applications
 function normalizeExistingLocations() {
@@ -76,7 +94,8 @@ form.addEventListener('submit', (e) => {
         coverLetter: document.getElementById('coverLetter').checked,
         url: document.getElementById('url').value.trim(),
         notes: document.getElementById('notes').value.trim(),
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        lastUpdated: new Date().toISOString()
     };
     
     applications.unshift(application);
@@ -123,6 +142,16 @@ function renderApplications() {
             return new Date(b.date) - new Date(a.date); // Newest first
         } else if (currentSort === 'oldest') {
             return new Date(a.date) - new Date(b.date); // Oldest first
+        } else if (currentSort === 'most-active') {
+            // Sort by most recently updated (most active)
+            const dateA = new Date(a.lastUpdated || a.createdAt || a.date);
+            const dateB = new Date(b.lastUpdated || b.createdAt || b.date);
+            return dateB - dateA;
+        } else if (currentSort === 'least-active') {
+            // Sort by least recently updated (least active)
+            const dateA = new Date(a.lastUpdated || a.createdAt || a.date);
+            const dateB = new Date(b.lastUpdated || b.createdAt || b.date);
+            return dateA - dateB;
         } else if (currentSort === 'salary-high') {
             // Sort by salary high to low (handle null values)
             const salaryA = a.salary || 0;
@@ -159,6 +188,7 @@ function renderApplications() {
                         <option value="Interview" ${app.status === 'Interview' ? 'selected' : ''}>Interview</option>
                         <option value="Offer" ${app.status === 'Offer' ? 'selected' : ''}>Offer</option>
                         <option value="Rejected" ${app.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                        <option value="Ghosted" ${app.status === 'Ghosted' ? 'selected' : ''}>Ghosted</option>
                     </select>
                     <button class="btn-delete" onclick="deleteApplication(${app.id})">Delete</button>
                 </div>
@@ -237,6 +267,7 @@ function updateStatus(id, newStatus) {
     const app = applications.find(app => app.id === id);
     if (app) {
         app.status = newStatus;
+        app.lastUpdated = new Date().toISOString();
         saveToLocalStorage();
         updateStats();
         renderApplications();
