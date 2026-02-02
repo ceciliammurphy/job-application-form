@@ -290,6 +290,8 @@ function updateStatus(id, newStatus) {
 // Update statistics
 function updateStats() {
     document.getElementById('totalApps').textContent = applications.length;
+    document.getElementById('waitingCount').textContent = 
+        applications.filter(app => app.status === 'Applied').length;
     document.getElementById('interviewCount').textContent = 
         applications.filter(app => app.status === 'Interview' || app.status === 'Offer').length;
     document.getElementById('offerCount').textContent = 
