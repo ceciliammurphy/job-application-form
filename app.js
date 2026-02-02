@@ -152,12 +152,18 @@ function renderApplications() {
             const dateA = new Date(a.lastUpdated || a.createdAt || a.date);
             const dateB = new Date(b.lastUpdated || b.createdAt || b.date);
             return dateA - dateB;
-        } else if (currentSort === 'alphabetical-az') {
+        } else if (currentSort === 'company-az') {
             // Sort alphabetically by company name A-Z
             return a.company.localeCompare(b.company);
-        } else if (currentSort === 'alphabetical-za') {
+        } else if (currentSort === 'company-za') {
             // Sort alphabetically by company name Z-A
             return b.company.localeCompare(a.company);
+        } else if (currentSort === 'position-az') {
+            // Sort alphabetically by position A-Z
+            return a.position.localeCompare(b.position);
+        } else if (currentSort === 'position-za') {
+            // Sort alphabetically by position Z-A
+            return b.position.localeCompare(a.position);
         } else if (currentSort === 'salary-high') {
             // Sort by salary high to low (handle null values)
             const salaryA = a.salary || 0;
