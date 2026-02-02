@@ -7,7 +7,7 @@ const applicationsList = document.getElementById('applicationsList');
 const filterButtons = document.querySelectorAll('.filter-btn');
 const sortSelect = document.getElementById('sortSelect');
 const locationFilter = document.getElementById('locationFilter');
-let currentFilter = 'all';
+let currentFilter = 'Applied';
 let currentSort = 'newest';
 let currentLocationFilter = 'all';
 
@@ -152,6 +152,12 @@ function renderApplications() {
             const dateA = new Date(a.lastUpdated || a.createdAt || a.date);
             const dateB = new Date(b.lastUpdated || b.createdAt || b.date);
             return dateA - dateB;
+        } else if (currentSort === 'alphabetical-az') {
+            // Sort alphabetically by company name A-Z
+            return a.company.localeCompare(b.company);
+        } else if (currentSort === 'alphabetical-za') {
+            // Sort alphabetically by company name Z-A
+            return b.company.localeCompare(a.company);
         } else if (currentSort === 'salary-high') {
             // Sort by salary high to low (handle null values)
             const salaryA = a.salary || 0;
