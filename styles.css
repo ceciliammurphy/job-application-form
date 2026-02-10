@@ -389,6 +389,12 @@ header h1 {
     margin-bottom: var(--spacing-md);
 }
 
+.application-info {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: start;
+}
+
 .application-info h3 {
     color: var(--text-primary);
     font-size: var(--font-xl);
@@ -646,4 +652,76 @@ header h1 {
         width: 100%;
         justify-content: space-between;
     }
+}
+
+/* Bulk Actions */
+.bulk-actions {
+    background: var(--primary-light);
+    border: 2px solid var(--primary-color);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.bulk-actions-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+#selectedCount {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.bulk-actions-buttons {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.bulk-status-select {
+    padding: var(--spacing-xs) var(--spacing-md);
+    border: 2px solid var(--border-medium);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-sm);
+    cursor: pointer;
+    background: var(--bg-primary);
+    transition: all 0.2s ease;
+}
+
+.bulk-status-select:hover {
+    border-color: var(--primary-color);
+}
+
+.btn-secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 2px solid var(--border-medium);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background: var(--border-light);
+}
+
+/* Checkbox for selection */
+.app-checkbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary-color);
+}
+
+.application-card.selected {
+    border-color: var(--primary-color);
+    background: var(--primary-light);
 }

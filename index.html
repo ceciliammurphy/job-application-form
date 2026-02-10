@@ -19,10 +19,6 @@
                 <div class="stat-label">Total Applications</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="waitingCount">0</div>
-                <div class="stat-label">Waiting On</div>
-            </div>
-            <div class="stat-card">
                 <div class="stat-number" id="interviewCount">0</div>
                 <div class="stat-label">Interviews</div>
             </div>
@@ -129,6 +125,24 @@
                         <button class="filter-btn" data-filter="Offer">Offer</button>
                         <button class="filter-btn" data-filter="Rejected">Rejected</button>
                         <button class="filter-btn" data-filter="Ghosted">Ghosted</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="bulkActions" class="bulk-actions" style="display: none;">
+                <div class="bulk-actions-content">
+                    <span id="selectedCount">0 selected</span>
+                    <div class="bulk-actions-buttons">
+                        <select id="bulkStatusSelect" class="bulk-status-select">
+                            <option value="">Change Status To...</option>
+                            <option value="Applied">Applied</option>
+                            <option value="Interview">Interview</option>
+                            <option value="Offer">Offer</option>
+                            <option value="Rejected">Rejected</option>
+                            <option value="Ghosted">Ghosted</option>
+                        </select>
+                        <button id="bulkDeleteBtn" class="btn-danger">Delete Selected</button>
+                        <button id="clearSelectionBtn" class="btn-secondary">Clear Selection</button>
                     </div>
                 </div>
             </div>

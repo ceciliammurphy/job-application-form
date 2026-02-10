@@ -1,5 +1,6 @@
 // Job Application Tracker App
 let applications = JSON.parse(localStorage.getItem('applications')) || [];
+let selectedApplications = new Set();
 
 // DOM Elements
 const form = document.getElementById('applicationForm');
@@ -7,6 +8,11 @@ const applicationsList = document.getElementById('applicationsList');
 const filterButtons = document.querySelectorAll('.filter-btn');
 const sortSelect = document.getElementById('sortSelect');
 const locationFilter = document.getElementById('locationFilter');
+const bulkActionsDiv = document.getElementById('bulkActions');
+const selectedCountSpan = document.getElementById('selectedCount');
+const bulkStatusSelect = document.getElementById('bulkStatusSelect');
+const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+const clearSelectionBtn = document.getElementById('clearSelectionBtn');
 let currentFilter = 'Applied';
 let currentSort = 'newest';
 let currentLocationFilter = 'all';
@@ -35,6 +41,17 @@ document.addEventListener('DOMContentLoaded', () => {
         currentLocationFilter = e.target.value;
         renderApplications();
     });
+    
+    // Bulk action listeners
+    bulkStatusSelect.addEventListener('change', (e) => {
+        if (e.target.value && selectedApplications.size > 0) {
+            bulkUpdateStatus(e.target.value);
+            e.target.value = ''; // Reset dropdown
+        }
+    });
+    
+    bulkDeleteBtn.addEventListener('click', bulkDelete);
+    clearSelectionBtn.addEventListener('click', clearSelection);
 });
 
 // Initialize lastUpdated for existing applications
@@ -188,11 +205,14 @@ function renderApplications() {
     }
     
     applicationsList.innerHTML = filteredApps.map(app => `
-        <div class="application-card">
+        <div class="application-card ${selectedApplications.has(app.id) ? 'selected' : ''}" data-id="${app.id}">
             <div class="application-header">
                 <div class="application-info">
-                    <h3>${app.company}</h3>
-                    <p class="position">${app.position}${app.location ? ` • ${app.location}` : ''}</p>
+                    <input type="checkbox" class="app-checkbox" data-id="${app.id}" ${selectedApplications.has(app.id) ? 'checked' : ''} onchange="toggleSelection(${app.id})">
+                    <div>
+                        <h3>${app.company}</h3>
+                        <p class="position">${app.position}${app.location ? ` • ${app.location}` : ''}</p>
+                    </div>
                 </div>
                 <div class="application-actions">
                     <select class="status-select status-${app.status}" onchange="updateStatus(${app.id}, this.value)">
@@ -290,8 +310,6 @@ function updateStatus(id, newStatus) {
 // Update statistics
 function updateStats() {
     document.getElementById('totalApps').textContent = applications.length;
-    document.getElementById('waitingCount').textContent = 
-        applications.filter(app => app.status === 'Applied').length;
     document.getElementById('interviewCount').textContent = 
         applications.filter(app => app.status === 'Interview' || app.status === 'Offer').length;
     document.getElementById('offerCount').textContent = 
@@ -369,4 +387,63 @@ function showNotification(message) {
         notification.style.animation = 'slideInRight 0.3s ease reverse';
         setTimeout(() => notification.remove(), 300);
     }, 3000);
+}
+
+// Bulk Actions Functions
+function toggleSelection(id) {
+    if (selectedApplications.has(id)) {
+        selectedApplications.delete(id);
+    } else {
+        selectedApplications.add(id);
+    }
+    updateBulkActionsUI();
+    renderApplications();
+}
+
+function updateBulkActionsUI() {
+    const count = selectedApplications.size;
+    if (count > 0) {
+        bulkActionsDiv.style.display = 'block';
+        selectedCountSpan.textContent = `${count} selected`;
+    } else {
+        bulkActionsDiv.style.display = 'none';
+    }
+}
+
+function bulkUpdateStatus(newStatus) {
+    selectedApplications.forEach(id => {
+        const app = applications.find(a => a.id === id);
+        if (app) {
+            app.status = newStatus;
+            app.lastUpdated = new Date().toISOString();
+        }
+    });
+    
+    saveToLocalStorage();
+    updateStats();
+    updateLocationFilter();
+    renderApplications();
+    showNotification(`Updated ${selectedApplications.size} application(s) to ${newStatus}`);
+}
+
+function bulkDelete() {
+    if (!confirm(`Are you sure you want to delete ${selectedApplications.size} application(s)?`)) {
+        return;
+    }
+    
+    applications = applications.filter(app => !selectedApplications.has(app.id));
+    selectedApplications.clear();
+    
+    saveToLocalStorage();
+    updateStats();
+    updateLocationFilter();
+    renderApplications();
+    updateBulkActionsUI();
+    showNotification('Applications deleted successfully');
+}
+
+function clearSelection() {
+    selectedApplications.clear();
+    updateBulkActionsUI();
+    renderApplications();
 }
