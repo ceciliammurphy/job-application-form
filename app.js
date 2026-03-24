@@ -25,6 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Normalize existing locations
     normalizeExistingLocations();
     
+    // Auto-ghost old applications (applied > 30 days)
+    autoGhostOldApplications();
+    
     updateStats();
     updateLocationFilter();
     renderApplications();
@@ -86,6 +89,44 @@ function normalizeExistingLocations() {
     }
 }
 
+// Auto-ghost applications that have been in 'Applied' status for over 30 days
+function autoGhostOldApplications() {
+    const now = new Date();
+    let changed = false;
+    applications.forEach(app => {
+        if (app.status === 'Applied' && app.date) {
+            // Parse stored date assuming YYYY-MM-DD or ISO-like
+            const appliedDate = new Date(app.date);
+            // If parsing failed or produced Invalid Date, try splitting (legacy handling)
+            if (isNaN(appliedDate)) {
+                const parts = (app.date || '').split('-');
+                if (parts.length === 3) {
+                    const [y, m, d] = parts.map(Number);
+                    // months are 0-indexed
+                    const localDate = new Date(y, m - 1, d);
+                    if (!isNaN(localDate)) {
+                        appliedDate.setTime(localDate.getTime());
+                    }
+                }
+            }
+
+            if (!isNaN(appliedDate)) {
+                const daysElapsed = (now - appliedDate) / (1000 * 60 * 60 * 24);
+                if (daysElapsed > 30) {
+                    app.status = 'Ghosted';
+                    app.lastUpdated = new Date().toISOString();
+                    changed = true;
+                }
+            }
+        }
+    });
+    if (changed) {
+        saveToLocalStorage();
+        updateStats();
+        showNotification('Moved long-applied applications to Ghosted');
+    }
+}
+
 // Set today's date as default
 function setTodayDate() {
     const dateInput = document.getElementById('date');
@@ -143,6 +184,8 @@ filterButtons.forEach(btn => {
 
 // Render applications
 function renderApplications() {
+    // Ensure any old 'Applied' apps are marked as Ghosted before rendering
+    autoGhostOldApplications();
     // Filter applications by status
     let filteredApps = currentFilter === 'all' 
         ? [...applications] 
